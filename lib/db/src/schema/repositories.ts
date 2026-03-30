@@ -11,6 +11,10 @@ export const repositoriesTable = pgTable("repositories", {
   stars: integer("stars").default(0),
   dxScore: real("dx_score").default(0).notNull(),
   lastScanAt: timestamp("last_scan_at"),
+  platform: text("platform").default("demo"),       // 'github' | 'gitlab' | 'demo'
+  repoOwner: text("repo_owner"),
+  repoName: text("repo_name"),
+  accessToken: text("access_token"),                // stored encrypted-at-rest via pg
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

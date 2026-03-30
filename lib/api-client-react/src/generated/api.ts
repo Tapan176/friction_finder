@@ -22,6 +22,7 @@ import type {
   CiCdMetrics,
   CodeQualityMetrics,
   DocsMetrics,
+  ErrorResponse,
   GetBeforeAfterComparisonParams,
   GetCiCdMetricsParams,
   GetCodeQualityMetricsParams,
@@ -51,7 +52,6 @@ type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const getHealthCheckUrl = () => {
@@ -221,7 +221,7 @@ export const addRepository = async (
 };
 
 export const getAddRepositoryMutationOptions = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<ErrorResponse>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -262,13 +262,13 @@ export type AddRepositoryMutationResult = NonNullable<
   Awaited<ReturnType<typeof addRepository>>
 >;
 export type AddRepositoryMutationBody = BodyType<AddRepositoryRequest>;
-export type AddRepositoryMutationError = ErrorType<unknown>;
+export type AddRepositoryMutationError = ErrorType<ErrorResponse>;
 
 /**
  * @summary Add a repository to analyze
  */
 export const useAddRepository = <
-  TError = ErrorType<unknown>,
+  TError = ErrorType<ErrorResponse>,
   TContext = unknown,
 >(options?: {
   mutation?: UseMutationOptions<
@@ -373,6 +373,90 @@ export function useGetRepository<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Remove a repository
+ */
+export const getDeleteRepositoryUrl = (id: number) => {
+  return `/api/repositories/${id}`;
+};
+
+export const deleteRepository = async (
+  id: number,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDeleteRepositoryUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteRepositoryMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteRepository>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteRepository>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["deleteRepository"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteRepository>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteRepository(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteRepositoryMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteRepository>>
+>;
+
+export type DeleteRepositoryMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Remove a repository
+ */
+export const useDeleteRepository = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteRepository>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteRepository>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getDeleteRepositoryMutationOptions(options));
+};
 
 /**
  * @summary List scan results

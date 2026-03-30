@@ -7,6 +7,7 @@
  */
 
 export * from "./addRepositoryRequest";
+export * from "./addRepositoryRequestPlatform";
 export * from "./beforeAfterComparison";
 export * from "./beforeAfterMetric";
 export * from "./bugPattern";
@@ -17,6 +18,7 @@ export * from "./codeQualityMetrics";
 export * from "./dayMetric";
 export * from "./docFreshnessItem";
 export * from "./docsMetrics";
+export * from "./errorResponse";
 export * from "./failurePattern";
 export * from "./getBeforeAfterComparisonParams";
 export * from "./getCiCdMetricsParams";
@@ -37,6 +39,7 @@ export * from "./moduleCoverageStatus";
 export * from "./pipelineStep";
 export * from "./prReviewMetrics";
 export * from "./repository";
+export * from "./repositoryPlatform";
 export * from "./reviewerLoad";
 export * from "./scanResult";
 export * from "./scanResultStatus";

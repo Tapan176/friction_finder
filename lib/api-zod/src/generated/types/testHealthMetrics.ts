@@ -14,6 +14,7 @@ export interface TestHealthMetrics {
   flakyRate: number;
   coveragePercent: number;
   coverageDelta: number;
+  isRealData?: boolean;
   failurePatterns: FailurePattern[];
   coverageByModule: ModuleCoverage[];
 }

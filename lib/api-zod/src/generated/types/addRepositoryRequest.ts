@@ -5,8 +5,13 @@
  * DX-Ray API - Developer Experience Diagnostic Platform
  * OpenAPI spec version: 0.1.0
  */
+import type { AddRepositoryRequestPlatform } from "./addRepositoryRequestPlatform";
 
 export interface AddRepositoryRequest {
+  /** Full repository URL (e.g. https://github.com/owner/repo) */
   url: string;
   name: string;
+  /** GitHub or GitLab personal access token */
+  accessToken?: string;
+  platform?: AddRepositoryRequestPlatform;
 }

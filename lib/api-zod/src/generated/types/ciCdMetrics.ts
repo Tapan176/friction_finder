@@ -14,6 +14,7 @@ export interface CiCdMetrics {
   avgBuildTimeDelta: number;
   successRate: number;
   flakiness: number;
+  isRealData?: boolean;
   buildTimeTrend: TimeSeriesPoint[];
   slowestSteps: PipelineStep[];
   buildsByDayOfWeek: DayMetric[];

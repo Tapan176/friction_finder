@@ -13,6 +13,7 @@ export interface PrReviewMetrics {
   avgTimeToFirstReviewHours: number;
   avgTimeToMergeHours: number;
   avgReviewCycles: number;
+  isRealData?: boolean;
   prSizeDistribution: SizeDistributionItem[];
   reviewerLoad: ReviewerLoad[];
   reviewTimeTrend: TimeSeriesPoint[];

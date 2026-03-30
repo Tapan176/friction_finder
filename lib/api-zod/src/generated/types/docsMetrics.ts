@@ -13,6 +13,7 @@ export interface DocsMetrics {
   staleDocsPercent: number;
   avgAgeMonths: number;
   missingDocs: number;
+  isRealData?: boolean;
   docsByFreshness: DocFreshnessItem[];
   mostStale: StaleDoc[];
 }

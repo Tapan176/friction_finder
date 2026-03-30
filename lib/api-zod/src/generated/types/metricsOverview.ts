@@ -13,5 +13,7 @@ export interface MetricsOverview {
   criticalIssues: number;
   warnings: number;
   improvements: number;
+  isRealData?: boolean;
+  lastFetchedAt?: string;
   tracks: TrackSummary[];
 }

@@ -8,7 +8,6 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -26,7 +25,11 @@ export const ListRepositoriesResponseItem = zod.object({
   language: zod.string().optional(),
   stars: zod.number().optional(),
   lastScanAt: zod.coerce.date().optional(),
-  dxScore: zod.number().describe("Overall DX health score 0-100"),
+  dxScore: zod.number(),
+  platform: zod.enum(["github", "gitlab", "demo"]).optional(),
+  repoOwner: zod.string().optional(),
+  repoName: zod.string().optional(),
+  isRealData: zod.boolean().optional(),
   createdAt: zod.coerce.date(),
 });
 export const ListRepositoriesResponse = zod.array(ListRepositoriesResponseItem);
@@ -35,8 +38,15 @@ export const ListRepositoriesResponse = zod.array(ListRepositoriesResponseItem);
  * @summary Add a repository to analyze
  */
 export const AddRepositoryBody = zod.object({
-  url: zod.string(),
+  url: zod
+    .string()
+    .describe("Full repository URL (e.g. https:\/\/github.com\/owner\/repo)"),
   name: zod.string(),
+  accessToken: zod
+    .string()
+    .optional()
+    .describe("GitHub or GitLab personal access token"),
+  platform: zod.enum(["github", "gitlab", "demo"]).optional(),
 });
 
 /**
@@ -54,8 +64,19 @@ export const GetRepositoryResponse = zod.object({
   language: zod.string().optional(),
   stars: zod.number().optional(),
   lastScanAt: zod.coerce.date().optional(),
-  dxScore: zod.number().describe("Overall DX health score 0-100"),
+  dxScore: zod.number(),
+  platform: zod.enum(["github", "gitlab", "demo"]).optional(),
+  repoOwner: zod.string().optional(),
+  repoName: zod.string().optional(),
+  isRealData: zod.boolean().optional(),
   createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Remove a repository
+ */
+export const DeleteRepositoryParams = zod.object({
+  id: zod.coerce.number(),
 });
 
 /**
@@ -75,6 +96,7 @@ export const ListScansResponseItem = zod.object({
   summary: zod.string().optional(),
   dxScoreBefore: zod.number().optional(),
   dxScoreAfter: zod.number().optional(),
+  isRealData: zod.boolean().optional(),
 });
 export const ListScansResponse = zod.array(ListScansResponseItem);
 
@@ -114,6 +136,7 @@ export const GetScanResponse = zod.object({
   summary: zod.string().optional(),
   dxScoreBefore: zod.number().optional(),
   dxScoreAfter: zod.number().optional(),
+  isRealData: zod.boolean().optional(),
 });
 
 /**
@@ -129,6 +152,8 @@ export const GetMetricsOverviewResponse = zod.object({
   criticalIssues: zod.number(),
   warnings: zod.number(),
   improvements: zod.number(),
+  isRealData: zod.boolean().optional(),
+  lastFetchedAt: zod.string().optional(),
   tracks: zod.array(
     zod.object({
       id: zod.string(),
@@ -155,6 +180,7 @@ export const GetCiCdMetricsResponse = zod.object({
   avgBuildTimeDelta: zod.number(),
   successRate: zod.number(),
   flakiness: zod.number(),
+  isRealData: zod.boolean().optional(),
   buildTimeTrend: zod.array(
     zod.object({
       date: zod.string(),
@@ -192,6 +218,7 @@ export const GetTestHealthMetricsResponse = zod.object({
   flakyRate: zod.number(),
   coveragePercent: zod.number(),
   coverageDelta: zod.number(),
+  isRealData: zod.boolean().optional(),
   failurePatterns: zod.array(
     zod.object({
       pattern: zod.string(),
@@ -221,6 +248,7 @@ export const GetCodeQualityMetricsResponse = zod.object({
   typeSafetyScore: zod.number(),
   complexityAvg: zod.number(),
   duplicateCodePercent: zod.number(),
+  isRealData: zod.boolean().optional(),
   bugPatterns: zod.array(
     zod.object({
       pattern: zod.string(),
@@ -258,6 +286,7 @@ export const GetPrReviewMetricsResponse = zod.object({
   avgTimeToFirstReviewHours: zod.number(),
   avgTimeToMergeHours: zod.number(),
   avgReviewCycles: zod.number(),
+  isRealData: zod.boolean().optional(),
   prSizeDistribution: zod.array(
     zod.object({
       size: zod.string(),
@@ -293,6 +322,7 @@ export const GetDocsMetricsResponse = zod.object({
   staleDocsPercent: zod.number(),
   avgAgeMonths: zod.number(),
   missingDocs: zod.number(),
+  isRealData: zod.boolean().optional(),
   docsByFreshness: zod.array(
     zod.object({
       category: zod.string(),

@@ -17,4 +17,5 @@ export interface ScanResult {
   summary?: string;
   dxScoreBefore?: number;
   dxScoreAfter?: number;
+  isRealData?: boolean;
 }

@@ -5,6 +5,7 @@
  * DX-Ray API - Developer Experience Diagnostic Platform
  * OpenAPI spec version: 0.1.0
  */
+import type { RepositoryPlatform } from "./repositoryPlatform";
 
 export interface Repository {
   id: number;
@@ -14,7 +15,10 @@ export interface Repository {
   language?: string;
   stars?: number;
   lastScanAt?: Date;
-  /** Overall DX health score 0-100 */
   dxScore: number;
+  platform?: RepositoryPlatform;
+  repoOwner?: string;
+  repoName?: string;
+  isRealData?: boolean;
   createdAt: Date;
 }

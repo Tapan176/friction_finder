@@ -9,6 +9,19 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface ErrorResponse {
+  error: string;
+}
+
+export type RepositoryPlatform =
+  (typeof RepositoryPlatform)[keyof typeof RepositoryPlatform];
+
+export const RepositoryPlatform = {
+  github: "github",
+  gitlab: "gitlab",
+  demo: "demo",
+} as const;
+
 export interface Repository {
   id: number;
   name: string;
@@ -17,14 +30,30 @@ export interface Repository {
   language?: string;
   stars?: number;
   lastScanAt?: string;
-  /** Overall DX health score 0-100 */
   dxScore: number;
+  platform?: RepositoryPlatform;
+  repoOwner?: string;
+  repoName?: string;
+  isRealData?: boolean;
   createdAt: string;
 }
 
+export type AddRepositoryRequestPlatform =
+  (typeof AddRepositoryRequestPlatform)[keyof typeof AddRepositoryRequestPlatform];
+
+export const AddRepositoryRequestPlatform = {
+  github: "github",
+  gitlab: "gitlab",
+  demo: "demo",
+} as const;
+
 export interface AddRepositoryRequest {
+  /** Full repository URL (e.g. https://github.com/owner/repo) */
   url: string;
   name: string;
+  /** GitHub or GitLab personal access token */
+  accessToken?: string;
+  platform?: AddRepositoryRequestPlatform;
 }
 
 export type ScanResultStatus =
@@ -47,6 +76,7 @@ export interface ScanResult {
   summary?: string;
   dxScoreBefore?: number;
   dxScoreAfter?: number;
+  isRealData?: boolean;
 }
 
 export type TriggerScanRequestTracksItem =
@@ -91,6 +121,8 @@ export interface MetricsOverview {
   criticalIssues: number;
   warnings: number;
   improvements: number;
+  isRealData?: boolean;
+  lastFetchedAt?: string;
   tracks: TrackSummary[];
 }
 
@@ -118,6 +150,7 @@ export interface CiCdMetrics {
   avgBuildTimeDelta: number;
   successRate: number;
   flakiness: number;
+  isRealData?: boolean;
   buildTimeTrend: TimeSeriesPoint[];
   slowestSteps: PipelineStep[];
   buildsByDayOfWeek: DayMetric[];
@@ -151,6 +184,7 @@ export interface TestHealthMetrics {
   flakyRate: number;
   coveragePercent: number;
   coverageDelta: number;
+  isRealData?: boolean;
   failurePatterns: FailurePattern[];
   coverageByModule: ModuleCoverage[];
 }
@@ -184,6 +218,7 @@ export interface CodeQualityMetrics {
   typeSafetyScore: number;
   complexityAvg: number;
   duplicateCodePercent: number;
+  isRealData?: boolean;
   bugPatterns: BugPattern[];
   qualityTrend: TimeSeriesPoint[];
   topIssues: CodeIssue[];
@@ -205,6 +240,7 @@ export interface PrReviewMetrics {
   avgTimeToFirstReviewHours: number;
   avgTimeToMergeHours: number;
   avgReviewCycles: number;
+  isRealData?: boolean;
   prSizeDistribution: SizeDistributionItem[];
   reviewerLoad: ReviewerLoad[];
   reviewTimeTrend: TimeSeriesPoint[];
@@ -227,6 +263,7 @@ export interface DocsMetrics {
   staleDocsPercent: number;
   avgAgeMonths: number;
   missingDocs: number;
+  isRealData?: boolean;
   docsByFreshness: DocFreshnessItem[];
   mostStale: StaleDoc[];
 }

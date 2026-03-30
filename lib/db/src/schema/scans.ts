@@ -12,6 +12,7 @@ export const scansTable = pgTable("scans", {
   summary: text("summary"),
   dxScoreBefore: real("dx_score_before"),
   dxScoreAfter: real("dx_score_after"),
+  isRealData: text("is_real_data"),
 });
 
 export const insertScanSchema = createInsertSchema(scansTable).omit({ id: true, startedAt: true });

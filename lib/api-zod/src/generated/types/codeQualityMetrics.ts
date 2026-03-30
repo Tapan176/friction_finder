@@ -14,6 +14,7 @@ export interface CodeQualityMetrics {
   typeSafetyScore: number;
   complexityAvg: number;
   duplicateCodePercent: number;
+  isRealData?: boolean;
   bugPatterns: BugPattern[];
   qualityTrend: TimeSeriesPoint[];
   topIssues: CodeIssue[];

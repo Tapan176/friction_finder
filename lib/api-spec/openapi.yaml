@@ -23,7 +23,6 @@ paths:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -63,6 +62,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Repository"
+        "400":
+          description: Invalid repository or token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /repositories/{id}:
     get:
@@ -82,6 +87,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Repository"
+    delete:
+      operationId: deleteRepository
+      tags: [repositories]
+      summary: Remove a repository
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
 
   /scans:
     get:
@@ -305,6 +323,14 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
     Repository:
       type: object
       properties:
@@ -325,7 +351,15 @@ components:
           format: date-time
         dxScore:
           type: number
-          description: Overall DX health score 0-100
+        platform:
+          type: string
+          enum: [github, gitlab, demo]
+        repoOwner:
+          type: string
+        repoName:
+          type: string
+        isRealData:
+          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -341,8 +375,15 @@ components:
       properties:
         url:
           type: string
+          description: Full repository URL (e.g. https://github.com/owner/repo)
         name:
           type: string
+        accessToken:
+          type: string
+          description: GitHub or GitLab personal access token
+        platform:
+          type: string
+          enum: [github, gitlab, demo]
       required:
         - url
         - name
@@ -373,6 +414,8 @@ components:
           type: number
         dxScoreAfter:
           type: number
+        isRealData:
+          type: boolean
       required:
         - id
         - repositoryId
@@ -407,6 +450,10 @@ components:
           type: integer
         improvements:
           type: integer
+        isRealData:
+          type: boolean
+        lastFetchedAt:
+          type: string
         tracks:
           type: array
           items:
@@ -450,6 +497,8 @@ components:
           type: number
         flakiness:
           type: number
+        isRealData:
+          type: boolean
         buildTimeTrend:
           type: array
           items:
@@ -484,6 +533,8 @@ components:
           type: number
         coverageDelta:
           type: number
+        isRealData:
+          type: boolean
         failurePatterns:
           type: array
           items:
@@ -512,6 +563,8 @@ components:
           type: number
         duplicateCodePercent:
           type: number
+        isRealData:
+          type: boolean
         bugPatterns:
           type: array
           items:
@@ -542,6 +595,8 @@ components:
           type: number
         avgReviewCycles:
           type: number
+        isRealData:
+          type: boolean
         prSizeDistribution:
           type: array
           items:
@@ -573,6 +628,8 @@ components:
           type: number
         missingDocs:
           type: integer
+        isRealData:
+          type: boolean
         docsByFreshness:
           type: array
           items:
