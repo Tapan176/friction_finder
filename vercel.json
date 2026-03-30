@@ -1,6 +1,6 @@
 {
   "buildCommand": "npx pnpm --filter @workspace/dx-ray build",
   "outputDirectory": "artifacts/dx-ray/dist/public",
-  "installCommand": "npx pnpm install",
+  "installCommand": "npx pnpm install --no-frozen-lockfile",
   "framework": null
 }
