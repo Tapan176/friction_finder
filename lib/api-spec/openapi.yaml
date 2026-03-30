@@ -1,15 +1,22 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: DX-Ray API - Developer Experience Diagnostic Platform
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: repositories
+    description: Repository management
+  - name: scans
+    description: DX scan operations
+  - name: metrics
+    description: DX metrics and insights
+  - name: reports
+    description: Scan reports
 paths:
   /healthz:
     get:
@@ -24,6 +31,270 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /repositories:
+    get:
+      operationId: listRepositories
+      tags: [repositories]
+      summary: List repositories
+      responses:
+        "200":
+          description: List of repositories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Repository"
+    post:
+      operationId: addRepository
+      tags: [repositories]
+      summary: Add a repository to analyze
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddRepositoryRequest"
+      responses:
+        "201":
+          description: Repository added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+
+  /repositories/{id}:
+    get:
+      operationId: getRepository
+      tags: [repositories]
+      summary: Get repository by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Repository details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Repository"
+
+  /scans:
+    get:
+      operationId: listScans
+      tags: [scans]
+      summary: List scan results
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of scans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ScanResult"
+    post:
+      operationId: triggerScan
+      tags: [scans]
+      summary: Trigger a new DX scan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TriggerScanRequest"
+      responses:
+        "201":
+          description: Scan started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanResult"
+
+  /scans/{id}:
+    get:
+      operationId: getScan
+      tags: [scans]
+      summary: Get scan result by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Scan result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ScanResult"
+
+  /metrics/overview:
+    get:
+      operationId: getMetricsOverview
+      tags: [metrics]
+      summary: Get high-level DX metrics overview
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: DX metrics overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MetricsOverview"
+
+  /metrics/ci-cd:
+    get:
+      operationId: getCiCdMetrics
+      tags: [metrics]
+      summary: Get CI/CD pipeline metrics
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+        - name: days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        "200":
+          description: CI/CD metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CiCdMetrics"
+
+  /metrics/test-health:
+    get:
+      operationId: getTestHealthMetrics
+      tags: [metrics]
+      summary: Get test suite health metrics
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Test health metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestHealthMetrics"
+
+  /metrics/code-quality:
+    get:
+      operationId: getCodeQualityMetrics
+      tags: [metrics]
+      summary: Get code quality metrics
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Code quality metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CodeQualityMetrics"
+
+  /metrics/pr-review:
+    get:
+      operationId: getPrReviewMetrics
+      tags: [metrics]
+      summary: Get PR review metrics
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: PR review metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrReviewMetrics"
+
+  /metrics/docs:
+    get:
+      operationId: getDocsMetrics
+      tags: [metrics]
+      summary: Get documentation freshness metrics
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Docs metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DocsMetrics"
+
+  /insights:
+    get:
+      operationId: listInsights
+      tags: [reports]
+      summary: List AI-generated insights and recommendations
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [critical, warning, info]
+      responses:
+        "200":
+          description: List of insights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Insight"
+
+  /before-after:
+    get:
+      operationId: getBeforeAfterComparison
+      tags: [reports]
+      summary: Get before/after improvement metrics
+      parameters:
+        - name: repositoryId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Before/after comparison
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BeforeAfterComparison"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +305,519 @@ components:
       required:
         - status
 
+    Repository:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        url:
+          type: string
+        description:
+          type: string
+        language:
+          type: string
+        stars:
+          type: integer
+        lastScanAt:
+          type: string
+          format: date-time
+        dxScore:
+          type: number
+          description: Overall DX health score 0-100
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - url
+        - dxScore
+        - createdAt
+
+    AddRepositoryRequest:
+      type: object
+      properties:
+        url:
+          type: string
+        name:
+          type: string
+      required:
+        - url
+        - name
+
+    ScanResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        repositoryId:
+          type: integer
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+        tracks:
+          type: array
+          items:
+            type: string
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+        summary:
+          type: string
+        dxScoreBefore:
+          type: number
+        dxScoreAfter:
+          type: number
+      required:
+        - id
+        - repositoryId
+        - status
+        - tracks
+        - startedAt
+
+    TriggerScanRequest:
+      type: object
+      properties:
+        repositoryId:
+          type: integer
+        tracks:
+          type: array
+          items:
+            type: string
+            enum: [ci-cd, test-health, code-quality, pr-review, docs, dependencies, onboarding, environment]
+      required:
+        - repositoryId
+        - tracks
+
+    MetricsOverview:
+      type: object
+      properties:
+        dxScore:
+          type: number
+        dxScoreDelta:
+          type: number
+        criticalIssues:
+          type: integer
+        warnings:
+          type: integer
+        improvements:
+          type: integer
+        tracks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrackSummary"
+      required:
+        - dxScore
+        - dxScoreDelta
+        - criticalIssues
+        - warnings
+        - improvements
+        - tracks
+
+    TrackSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        score:
+          type: number
+        status:
+          type: string
+          enum: [critical, warning, good]
+        topIssue:
+          type: string
+      required:
+        - id
+        - name
+        - score
+        - status
+
+    CiCdMetrics:
+      type: object
+      properties:
+        avgBuildTimeMinutes:
+          type: number
+        avgBuildTimeDelta:
+          type: number
+        successRate:
+          type: number
+        flakiness:
+          type: number
+        buildTimeTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimeSeriesPoint"
+        slowestSteps:
+          type: array
+          items:
+            $ref: "#/components/schemas/PipelineStep"
+        buildsByDayOfWeek:
+          type: array
+          items:
+            $ref: "#/components/schemas/DayMetric"
+      required:
+        - avgBuildTimeMinutes
+        - avgBuildTimeDelta
+        - successRate
+        - flakiness
+        - buildTimeTrend
+        - slowestSteps
+        - buildsByDayOfWeek
+
+    TestHealthMetrics:
+      type: object
+      properties:
+        totalTests:
+          type: integer
+        flakyTests:
+          type: integer
+        flakyRate:
+          type: number
+        coveragePercent:
+          type: number
+        coverageDelta:
+          type: number
+        failurePatterns:
+          type: array
+          items:
+            $ref: "#/components/schemas/FailurePattern"
+        coverageByModule:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModuleCoverage"
+      required:
+        - totalTests
+        - flakyTests
+        - flakyRate
+        - coveragePercent
+        - coverageDelta
+        - failurePatterns
+        - coverageByModule
+
+    CodeQualityMetrics:
+      type: object
+      properties:
+        overallScore:
+          type: number
+        typeSafetyScore:
+          type: number
+        complexityAvg:
+          type: number
+        duplicateCodePercent:
+          type: number
+        bugPatterns:
+          type: array
+          items:
+            $ref: "#/components/schemas/BugPattern"
+        qualityTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimeSeriesPoint"
+        topIssues:
+          type: array
+          items:
+            $ref: "#/components/schemas/CodeIssue"
+      required:
+        - overallScore
+        - typeSafetyScore
+        - complexityAvg
+        - duplicateCodePercent
+        - bugPatterns
+        - qualityTrend
+        - topIssues
+
+    PrReviewMetrics:
+      type: object
+      properties:
+        avgTimeToFirstReviewHours:
+          type: number
+        avgTimeToMergeHours:
+          type: number
+        avgReviewCycles:
+          type: number
+        prSizeDistribution:
+          type: array
+          items:
+            $ref: "#/components/schemas/SizeDistributionItem"
+        reviewerLoad:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewerLoad"
+        reviewTimeTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimeSeriesPoint"
+      required:
+        - avgTimeToFirstReviewHours
+        - avgTimeToMergeHours
+        - avgReviewCycles
+        - prSizeDistribution
+        - reviewerLoad
+        - reviewTimeTrend
+
+    DocsMetrics:
+      type: object
+      properties:
+        totalDocs:
+          type: integer
+        staleDocsPercent:
+          type: number
+        avgAgeMonths:
+          type: number
+        missingDocs:
+          type: integer
+        docsByFreshness:
+          type: array
+          items:
+            $ref: "#/components/schemas/DocFreshnessItem"
+        mostStale:
+          type: array
+          items:
+            $ref: "#/components/schemas/StaleDoc"
+      required:
+        - totalDocs
+        - staleDocsPercent
+        - avgAgeMonths
+        - missingDocs
+        - docsByFreshness
+        - mostStale
+
+    Insight:
+      type: object
+      properties:
+        id:
+          type: integer
+        track:
+          type: string
+        severity:
+          type: string
+          enum: [critical, warning, info]
+        title:
+          type: string
+        description:
+          type: string
+        impact:
+          type: string
+        recommendation:
+          type: string
+        estimatedHoursSaved:
+          type: number
+      required:
+        - id
+        - track
+        - severity
+        - title
+        - description
+        - recommendation
+
+    BeforeAfterComparison:
+      type: object
+      properties:
+        period:
+          type: string
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/BeforeAfterMetric"
+      required:
+        - period
+        - metrics
+
+    BeforeAfterMetric:
+      type: object
+      properties:
+        label:
+          type: string
+        before:
+          type: number
+        after:
+          type: number
+        unit:
+          type: string
+        improvement:
+          type: number
+        isPositiveWhenIncreasing:
+          type: boolean
+      required:
+        - label
+        - before
+        - after
+        - unit
+        - improvement
+        - isPositiveWhenIncreasing
+
+    TimeSeriesPoint:
+      type: object
+      properties:
+        date:
+          type: string
+        value:
+          type: number
+        label:
+          type: string
+      required:
+        - date
+        - value
+
+    PipelineStep:
+      type: object
+      properties:
+        name:
+          type: string
+        avgDurationMinutes:
+          type: number
+        failureRate:
+          type: number
+        isBottleneck:
+          type: boolean
+      required:
+        - name
+        - avgDurationMinutes
+        - failureRate
+        - isBottleneck
+
+    DayMetric:
+      type: object
+      properties:
+        day:
+          type: string
+        avgMinutes:
+          type: number
+        builds:
+          type: integer
+      required:
+        - day
+        - avgMinutes
+        - builds
+
+    FailurePattern:
+      type: object
+      properties:
+        pattern:
+          type: string
+        count:
+          type: integer
+        affectedTests:
+          type: integer
+        isFlaky:
+          type: boolean
+      required:
+        - pattern
+        - count
+        - affectedTests
+        - isFlaky
+
+    ModuleCoverage:
+      type: object
+      properties:
+        module:
+          type: string
+        coverage:
+          type: number
+        status:
+          type: string
+          enum: [good, warning, critical]
+      required:
+        - module
+        - coverage
+        - status
+
+    BugPattern:
+      type: object
+      properties:
+        pattern:
+          type: string
+        occurrences:
+          type: integer
+        category:
+          type: string
+        suggestedFix:
+          type: string
+      required:
+        - pattern
+        - occurrences
+        - category
+        - suggestedFix
+
+    CodeIssue:
+      type: object
+      properties:
+        file:
+          type: string
+        line:
+          type: integer
+        severity:
+          type: string
+          enum: [error, warning, info]
+        rule:
+          type: string
+        message:
+          type: string
+      required:
+        - file
+        - severity
+        - rule
+        - message
+
+    SizeDistributionItem:
+      type: object
+      properties:
+        size:
+          type: string
+        count:
+          type: integer
+        avgReviewTimeHours:
+          type: number
+      required:
+        - size
+        - count
+        - avgReviewTimeHours
+
+    ReviewerLoad:
+      type: object
+      properties:
+        reviewer:
+          type: string
+        prCount:
+          type: integer
+        avgResponseHours:
+          type: number
+      required:
+        - reviewer
+        - prCount
+        - avgResponseHours
+
+    DocFreshnessItem:
+      type: object
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+      required:
+        - category
+        - count
+
+    StaleDoc:
+      type: object
+      properties:
+        path:
+          type: string
+        lastUpdated:
+          type: string
+        monthsOld:
+          type: number
+        category:
+          type: string
+      required:
+        - path
+        - lastUpdated
+        - monthsOld
+        - category

@@ -1,0 +1,18 @@
+packages:
+  "framer-motion": "For premium micro-interactions, page transitions, and staggered loading animations"
+  "recharts": "For rendering data-dense, interactive charts (line, bar, pie, radar) in the dashboard"
+  "clsx": "For conditional class merging"
+  "tailwind-merge": "For merging tailwind classes safely"
+  "@radix-ui/react-slot": "For accessible component composition"
+  "@radix-ui/react-dropdown-menu": "For repository selection dropdowns"
+  "@radix-ui/react-tooltip": "For data point tooltips"
+
+images:
+  - path: "artifacts/dx-ray/public/images/hero-scan.png"
+    description: "Abstract conceptual visualization of a digital codebase being X-rayed. Deep dark background with glowing cyan and electric blue wireframes, technical UI elements, and medical-grade precision scanning effects. Professional, futuristic, data-dense."
+    aspect_ratio: "16:9"
+
+notes:
+  - "The API client hooks are imported from @workspace/api-client-react"
+  - "Repository context is used to share the selected repository ID across dashboard pages"
+  - "All dashboard routes are nested under /dashboard"

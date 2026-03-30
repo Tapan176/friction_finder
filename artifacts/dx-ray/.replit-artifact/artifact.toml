@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "DX-Ray"
+version = "1.0.0"
+id = "artifacts/dx-ray"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20817
+
+[services.development]
+run = "pnpm --filter @workspace/dx-ray run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/dx-ray", "run", "build" ]
+publicDir = "artifacts/dx-ray/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20817"
+BASE_PATH = "/"
